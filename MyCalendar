@@ -1,0 +1,138 @@
+enum DayType {
+  Workday,
+  Holiday,
+}
+
+interface IWeekData {
+  date: string;
+  type: DayType;
+}
+
+interface ICalendarData {
+  getRows(): HTMLTableRowElement[];
+  getCellValue(cell: HTMLTableCellElement): string;
+}
+
+class TableCalendarData implements ICalendarData {
+  private table: HTMLTableElement;
+
+  constructor(table: HTMLTableElement) {
+    this.table = table;
+  }
+
+  public getRows(): HTMLTableRowElement[] {
+    return Array.from(this.table.rows).slice(1);
+  }
+
+  public getCellValue(cell: HTMLTableCellElement): string {
+    return cell.textContent || '';
+  }
+}
+
+interface ICellClassifier {
+  classifyCell(cell: HTMLTableCellElement): DayType;
+}
+
+class CellClassifier implements ICellClassifier {
+  public classifyCell(cell: HTMLTableCellElement): DayType {
+    // セルの分類ロジックを実装する
+    // 例: クラス名や属性値を元に仕事日か休日かを判定する
+
+    return DayType.Workday; // 仮の実装
+  }
+}
+
+class Calendar {
+  private cellClassifier: ICellClassifier;
+  private calendarData: ICalendarData;
+
+  constructor(calendarData: ICalendarData, cellClassifier: ICellClassifier) {
+    this.calendarData = calendarData;
+    this.cellClassifier = cellClassifier;
+  }
+
+  public getCalendarData(): IWeekData[][] {
+    const calendarData: IWeekData[][] = [];
+
+    const rows = this.calendarData.getRows();
+    for (const row of rows) {
+      const weekData: IWeekData[] = [];
+
+      const cells = Array.from(row.cells);
+      for (const cell of cells) {
+        const date = this.calendarData.getCellValue(cell);
+        const type = this.cellClassifier.classifyCell(cell);
+
+        weekData.push({ date, type });
+      }
+
+      calendarData.push(weekData);
+    }
+
+    return calendarData;
+  }
+}
+
+// 使用例
+const tableElement = document.getElementById('calendarTable') as HTMLTableElement;
+const tableCalendarData = new TableCalendarData(tableElement);
+const cellClassifier = new CellClassifier();
+const calendar = new Calendar(tableCalendarData, cellClassifier);
+const calendarData = calendar.getCalendarData();
+console.log(calendarData);
+
+
+//////////////////////////////////
+//直前の日取得するロジック
+// 現在の日付を取得するユーティリティ関数
+function getCurrentDate(): Date {
+  return new Date();
+}
+
+// CalendarクラスのgetPreviousDayTypeメソッドを追加
+class Calendar {
+  // ...既存のコード...
+
+  public getPreviousDayType(): { workday: string | null; holiday: string | null } {
+    const currentDate = getCurrentDate();
+
+    let previousWorkday: string | null = null;
+    let previousHoliday: string | null = null;
+
+    const rows = this.calendarData.getRows();
+    for (const row of rows) {
+      const cells = Array.from(row.cells);
+      for (let i = cells.length - 1; i >= 0; i--) {
+        const cell = cells[i];
+        const date = this.calendarData.getCellValue(cell);
+        const type = this.cellClassifier.classifyCell(cell);
+
+        const cellDate = new Date(date);
+        if (cellDate < currentDate) {
+          if (type === DayType.Workday && !previousWorkday) {
+            previousWorkday = date;
+          } else if (type === DayType.Holiday && !previousHoliday) {
+            previousHoliday = date;
+          }
+
+          if (previousWorkday && previousHoliday) {
+            // 既に直前のWorkdayとHolidayが見つかった場合はループを終了
+            return { workday: previousWorkday, holiday: previousHoliday };
+          }
+        }
+      }
+    }
+
+    return { workday: previousWorkday, holiday: previousHoliday };
+  }
+}
+
+// 使用例
+const tableElement = document.getElementById('calendarTable') as HTMLTableElement;
+const tableCalendarData = new TableCalendarData(tableElement);
+const cellClassifier = new CellClassifier();
+const calendar = new Calendar(tableCalendarData, cellClassifier);
+
+const previousDayTypes = calendar.getPreviousDayType();
+console.log(previousDayTypes);
+
