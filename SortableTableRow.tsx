@@ -4,6 +4,7 @@ import { useDrag, useDrop } from 'react-dnd'
 
 import { ItemTypes } from './ItemTypes'
 import { SxProps, TableCell, TableRow,Theme } from '@mui/material'
+import { ICellData } from './SortableTableRows'
 
 const rowDefaultSxProps = {
 
@@ -12,7 +13,7 @@ const rowDefaultSxProps = {
 export interface ISortableTableRow {
   id: any
   index: number
-  cells: { node: React.ReactNode, canDrag: boolean }[]
+  cells: ICellData[]
   moveRow: (dragIndex: number, hoverIndex: number) => void,
   rowSx?: SxProps<Theme>
 }
@@ -23,7 +24,7 @@ interface DragItem {
   type: string
 }
 
-export const SortableTableRow: FC<ISortableTableRow> = ({ id, cells, index, moveRow, rowSx }) => {
+export const SortableTableRow: FC<ISortableTableRow> =({ id, cells, index, moveRow, rowSx }) => {
   const ref = useRef<HTMLTableRowElement>(null)
   const [canDrag, setCanDrag] = useState(false)
 
@@ -91,6 +92,8 @@ export const SortableTableRow: FC<ISortableTableRow> = ({ id, cells, index, move
   const opacity = isDragging ? 0 : 1
   const sxProp = rowSx || rowDefaultSxProps 
   drag(drop(ref))
+
+  // console.log('render row')
   return (
     <TableRow ref={ref} style={{ opacity }} data-handler-id={handlerId} sx={sxProp}>
       {cells.map((cell, colIndex) => (
@@ -107,7 +110,7 @@ export const SortableTableRow: FC<ISortableTableRow> = ({ id, cells, index, move
             }
           }}
         >
-          {cell.node}
+          {cell.children}
         </TableCell>
       ))}
     </TableRow>

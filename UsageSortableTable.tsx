@@ -10,16 +10,16 @@ const UsageSortableTable: React.FC = () => {
             id: 1,
             cells: [
                 {
-                    node: <div style={{ display: 'flex', alignItems: 'center', cursor: 'move' }}>
+                    children: <div style={{ display: 'flex', alignItems: 'center', cursor: 'move' }}>
                         <DragIndicatorIcon style={{ marginRight: 8 }} /></div>,
                     canDrag: true
                 },
                 {
-                    node: <TextField></TextField>,
+                    children: <TextField></TextField>,
                     canDrag: false
                 },
                 {
-                    node: <TextField></TextField>,
+                    children: <TextField></TextField>,
                     canDrag: false
                 },
             ],
@@ -28,16 +28,16 @@ const UsageSortableTable: React.FC = () => {
             id: 2,
             cells: [
                 {
-                    node: <div style={{ display: 'flex', alignItems: 'center', cursor: 'move' }}>
+                    children: <div style={{ display: 'flex', alignItems: 'center', cursor: 'move' }}>
                         <DragIndicatorIcon style={{ marginRight: 8 }} /></div>,
                     canDrag: true
                 },
                 {
-                    node: <TextField></TextField>,
+                    children: <TextField></TextField>,
                     canDrag: false
                 },
                 {
-                    node: <TextField></TextField>,
+                    children: <TextField></TextField>,
                     canDrag: false
                 },
             ],
@@ -46,16 +46,16 @@ const UsageSortableTable: React.FC = () => {
             id: 3,
             cells: [
                 {
-                    node: <div style={{ display: 'flex', alignItems: 'center', cursor: 'move' }}>
+                    children: <div style={{ display: 'flex', alignItems: 'center', cursor: 'move' }}>
                         <DragIndicatorIcon style={{ marginRight: 8 }} /></div>,
                     canDrag: true
                 },
                 {
-                    node: <TextField></TextField>,
+                    children: <TextField></TextField>,
                     canDrag: false
                 },
                 {
-                    node: <TextField></TextField>,
+                    children: <TextField></TextField>,
                     canDrag: false
                 },
             ],
