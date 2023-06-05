@@ -3,7 +3,7 @@ import React, { FC, useState, useRef } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 
 import { ItemTypes } from './ItemTypes'
-import { SxProps, TableCell, TableRow,Theme } from '@mui/material'
+import { Button, SxProps, TableCell, TableRow,Theme } from '@mui/material'
 import { ICellData } from './SortableTableRows'
 
 const rowDefaultSxProps = {
@@ -14,7 +14,7 @@ export interface ISortableTableRow {
   id: any
   index: number
   cells: ICellData[]
-  moveRow: (dragIndex: number, hoverIndex: number) => void,
+  moveRow: (dragIndex: number, hoverIndex: number) => void
   rowSx?: SxProps<Theme>
 }
 
@@ -93,7 +93,7 @@ export const SortableTableRow: FC<ISortableTableRow> =({ id, cells, index, moveR
   const sxProp = rowSx || rowDefaultSxProps 
   drag(drop(ref))
 
-  // console.log('render row')
+  console.log('render row',id,cells)
   return (
     <TableRow ref={ref} style={{ opacity }} data-handler-id={handlerId} sx={sxProp}>
       {cells.map((cell, colIndex) => (

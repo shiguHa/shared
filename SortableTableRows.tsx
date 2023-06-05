@@ -29,6 +29,7 @@ export const SortableTableRows: FC<ISortableTableProps> = (props) => {
 
   const moveRow = useCallback((dragIndex: number, hoverIndex: number) => {
     setData((prevState) => {
+      console.log(prevState)
       const updatedData = update(prevState, {
         $splice: [
           [dragIndex, 1],
@@ -40,6 +41,7 @@ export const SortableTableRows: FC<ISortableTableProps> = (props) => {
       return updatedData
     });
   }, [setData, props.onRowReorder])
+
 
   const renderRow = useCallback(
     (card: IRowData, index: number) => {
@@ -56,7 +58,7 @@ export const SortableTableRows: FC<ISortableTableProps> = (props) => {
     [],
   )
 
-  // console.log('render SortableTableRows')
+  console.log('render SortableTableRows', data)
   return (
     <>
       {data.map((card, i) => renderRow(card, i))}

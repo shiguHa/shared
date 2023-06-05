@@ -1,12 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import React, { ReactElement, RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ReactElement, RefObject, useCallback, useEffect, useRef, useState, createContext } from 'react';
 import { SortableTableRows, IRowData, ICellData } from '../sortableTableOnExample/SortableTableRows';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Button, TableContainer, TableBody, Table, TableHead, TextField, TableRow, SxProps, TableCell, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { v4 as uuidv4 } from 'uuid'
 import { useForm } from 'react-hook-form'
-import DeleteIcon from '@mui/icons-material/Delete';
 
 interface IWorkLoadItem {
     sakku: string,
@@ -28,22 +27,25 @@ interface IWorkLoadItemRow {
     inputValues: IWorkLoadItem
 }
 
+type ContextType = {
+    rows: IRowData[];
+    setRows: (value: IRowData[]) => void;
+}
+// @ts-ignore
+export const RemoveRowContext = createContext<ContextType>({} as ContextType);
+
 
 const DragIndicatorIconNode = <div style={{ display: 'flex', alignItems: 'center', cursor: 'move' }}>
     <DragIndicatorIcon style={{ marginRight: 8 }} /></div>
 
 const WorkLoadAutocompleteSetting: React.FC = () => {
-    // const initialValues = Array(10).fill('').map(() => Array(10).fill(''));
     const [rows, setRows] = useState<Array<IRowData>>([])
     const { register, handleSubmit } = useForm();
+    const [maxRowIndex,setMaxRowIndex] = useState<number>(0)
 
     useEffect(() => {
         fetchData()
     }, [])
-
-    useEffect (() => {
-        console.log(rows)
-    },[rows])
 
     // @ts-ignore
     const onSubmit = (data) => console.log(data)
@@ -73,6 +75,7 @@ const WorkLoadAutocompleteSetting: React.FC = () => {
                     }
                     return row
                 })
+                setMaxRowIndex(maxRowIndex + rows.length)
                 setRows(rows)
             })
     }
@@ -83,7 +86,7 @@ const WorkLoadAutocompleteSetting: React.FC = () => {
             const uuid = uuidv4()
             const cell = {
                 // @ts-ignore
-                children: <TextField id={uuid} key={uuid} defaultValue={workLoadItem[val]} {...register(`${rowId}_${val}`)}></TextField>,
+                children: <TextField id={uuid} key={uuid} defaultValue={workLoadItem[val]} size='small' inputProps={{maxLength: "3"}} {...register(`${rowId}_${val}`)}></TextField>,
                 canDrag: false
             }
             return cell
@@ -92,16 +95,18 @@ const WorkLoadAutocompleteSetting: React.FC = () => {
         result.unshift({ canDrag: true, children: DragIndicatorIconNode })
         //　削除ボタンを最後に追加
         result.push({
-            canDrag: false, children:
-                <IconButton aria-label="delete" onClick={() => handleRemoveClick(rowId)}>
-                    <DeleteIcon />
-                </IconButton>
+            canDrag: false,
+            children: ( <Button onClick={()=> handleRowRemoveClick(rowId)}>削除</Button>
+                // <RemoveRowContext.Provider value={{ rows, setRows }}>
+                //     <MyButton></MyButton>
+                // </RemoveRowContext.Provider>
+            )     
         })
         return result
     }
 
 
-    const handleAddRowClick = useCallback(() => {
+    const handleAddRowClick = () => {
         console.log(rows)
         const workLoadItem: IWorkLoadItem = {
             sakku: "",
@@ -112,23 +117,23 @@ const WorkLoadAutocompleteSetting: React.FC = () => {
             sagyounaiyou: "",
             enviromentCode: "",
         }
-        const newIndex = rows.length + 1;
+        
+        const newIndex = maxRowIndex + 1;
         const newRow = {
             id: newIndex,
             cells: createCells(newIndex, workLoadItem)
         }
+        setMaxRowIndex(maxRowIndex + 1)
         const newRows = [...rows, newRow];
         setRows(newRows)
-    }, [])
+    }
 
     // 行を削除
-    const handleRemoveClick = useCallback((rowId: number) => {
-        console.log(rowId, rows)
-        const newRows = rows.filter( item => item.id !== rowId);
-        console.log(newRows)
-        setRows(newRows)
-
-    }, [])
+    const handleRowRemoveClick = useCallback((rowId:number) => {
+        setRows((prevState) => {
+            return prevState.filter( item => item.id !== rowId);
+          });
+      }, [rows]);
 
     // useCallBack
     const handleRowReorder = useCallback((rows: IRowData[]) => {
@@ -141,6 +146,7 @@ const WorkLoadAutocompleteSetting: React.FC = () => {
             }
             rowDatas.push(cellDatas)
         }
+        setRows([...rows])
         console.log(rows)
         //1列目を削除する。
         const columnIndexToRemove = 0
@@ -176,6 +182,7 @@ const WorkLoadAutocompleteSetting: React.FC = () => {
                     </Table>
                 </TableContainer>
                 <Button variant='outlined' startIcon={<AddIcon />} onClick={handleAddRowClick}>行を追加</Button>
+                <Button variant='outlined' startIcon={<AddIcon />} onClick={fetchData}>値取得</Button>
                 <Button type='submit'>登録</Button>
                 {/* </div> */}
             </form>
