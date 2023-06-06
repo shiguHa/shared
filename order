@@ -1,0 +1,14 @@
+const orderRowId = [2, 0, 1];
+
+const workLoadItemRows: WorkLoadItemRow[] = [
+  { rowId: 0, inputValues: /* ... */ },
+  { rowId: 1, inputValues: /* ... */ },
+  { rowId: 2, inputValues: /* ... */ },
+  // ... other items
+];
+
+const sortedRows = orderRowId.map((rowId) =>
+  workLoadItemRows.find((row) => row.rowId === rowId)
+);
+
+console.log(sortedRows);
