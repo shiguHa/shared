@@ -11,3 +11,7 @@ https://medium.com/@ryutamaki/npm-module-%E3%81%AB-typescript-%E3%81%AE%E5%9E%8B
 https://qiita.com/Nossa/items/726cc3e67527e896ed1e
 
 https://zenn.dev/ymmt1089/articles/20220429_interface
+
+
+chrome コマンド
+https://developer.chrome.com/docs/extensions/reference/commands/
