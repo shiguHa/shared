@@ -16,6 +16,8 @@ const templateContainer = document.querySelector<HTMLDivElement>(
   "#template-container"
 )!;
 
+const getTemplateDialogElement = () => document.querySelector("dialog")!;
+
 function updateTooltip(element: HTMLElement, tooltip: HTMLDivElement) {
   computePosition(element, tooltip, {
     placement: "top",
@@ -58,19 +60,7 @@ function renderTemplates() {
     templateElem.addEventListener("mouseleave", () => hideTooltip(tooltipElem));
   });
 
-  // 設定用で、dialogを作成する。
-  const templateDialogElement = document.createElement("dialog");
-  templateDialogElement.classList.add("dialog-element");
-  templateDialogElement.innerHTML = `
-    <Button class="close">閉じる</Button>
-  `;
-  const cancelButton = templateDialogElement.querySelector<HTMLButtonElement>(
-    ".close"
-  )!;
-  cancelButton.addEventListener("click", () => templateDialogElement.close());
-
-  document.body.appendChild(templateDialogElement);
-
+  const templateDialogElement = getTemplateDialogElement();
   // ダイアログを開く用を作成する。
   const templateElem = document.createElement("div");
   templateElem.classList.add("template");
@@ -83,4 +73,38 @@ function renderTemplates() {
   templateContainer.appendChild(templateElem);
 }
 
+function createTemplateDialog() {
+  const templateDialogElement = document.createElement("dialog");
+  templateDialogElement.classList.add("dialog-element");
+  templateDialogElement.innerHTML = `
+    <Button class="close">&times;</Button>
+    <div class="dialog-content">
+    
+    </div>
+  `;
+  const cancelButton = templateDialogElement.querySelector<HTMLButtonElement>(
+    ".close"
+  )!;
+  cancelButton.addEventListener("click", () => templateDialogElement.close());
+
+  document.body.appendChild(templateDialogElement);
+}
+function renderTemplateForDialog(templates: Template[]) {
+  const dialogContentElement = document.querySelector(".dialog-content")!;
+
+  templates.forEach((template) => {
+    const templateHTML = `
+      <div class="row"> 
+        <input value="${template.displayText}" />
+        <input value="${template.description}" />
+      </div>
+    `;
+    dialogContentElement!.insertAdjacentHTML("beforeend", templateHTML);
+  });
+}
+
+createTemplateDialog();
 renderTemplates();
+
+renderTemplateForDialog(templates);
+
